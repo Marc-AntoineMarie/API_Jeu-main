@@ -33,7 +33,7 @@ jobs:
       run: |
         echo "Déploiement du frontend (répertoire /frontend) vers Vercel..."
         vercel deploy --prebuilt --prod --scope ${{ secrets.VERCEL_ORG_ID }} --project ${{ secrets.VERCEL_PROJECT_ID }}
-      working-directory: ./frontend
+      working-directory: ./admin-dashboard
       env:
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         

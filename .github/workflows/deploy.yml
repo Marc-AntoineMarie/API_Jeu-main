@@ -3,37 +3,34 @@ name: CI/CD Pipeline Vercel & Render
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Déploiement du Backend sur Render 
-    - name: Trigger Render Backend Deployment
-      run: |
-        echo "Déploiement backend sur Render"
-        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-        echo "Déploiement Render ok"
+      - name: Trigger Render Backend Deployment
+        run: |
+          echo "Déploiement backend sur Render"
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          echo "Déploiement Render ok"
 
-    # Déploiement du Frontend sur Vercel 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-    - name: Install Vercel CLI
-      run: npm install -g vercel
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
-    - name: Deploy Frontend to Vercel (Build & Push)
-      run: |
-        echo "Déploiement du frontend (répertoire /frontend) vers Vercel..."
-        vercel deploy --prebuilt --prod --scope ${{ secrets.VERCEL_ORG_ID }} --project ${{ secrets.VERCEL_PROJECT_ID }}
-      working-directory: ./admin-dashboard
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        
+      - name: Deploy Frontend to Vercel (Build & Push)
+        run: |
+          echo "Déploiement du frontend (répertoire /frontend) vers Vercel..."
+          vercel deploy --prebuilt --prod --scope ${{ secrets.VERCEL_ORG_ID }} --project ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: ./admin-dashboard
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

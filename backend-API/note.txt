@@ -1,0 +1,7 @@
+MDC :
+
+[users] 1---∞ [reviews] ∞---1 [movies] 1---∞ [genres]
+   |                         |
+   ∞                         ∞
+   |                         |
+ [watchlist] ---------------/

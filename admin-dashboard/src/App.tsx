@@ -7,7 +7,6 @@ import Games from "./pages/Games";
 import Login from "./pages/login";
 import Review from "./pages/Review";
 import Genres from "./pages/Genre";
-import Register from "./pages/register";
 import GameList from "./pages/GameList";
 
 export default function App() {

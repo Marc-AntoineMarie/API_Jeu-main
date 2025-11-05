@@ -26,6 +26,9 @@ jobs:
             cd /var/www/API_Jeu-main
             git pull origin main
             cd admin-dashboard
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20
             npm install
             npm run build
-            pm2 restart frontend || pm2 start npm --name "frontend" -- run preview
+            sudo systemctl reload nginx

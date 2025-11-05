@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface User {
   _id: string;
   name: string;
@@ -34,7 +36,7 @@ export default function Users() {
         return;
       }
 
-      const res = await axios.get("http://localhost:3000/api/users/", {
+      const res = await axios.get(`${API_BASE_URL}/api/users/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -62,7 +64,7 @@ export default function Users() {
       if (!token) return alert("Token manquant.");
 
       const res = await axios.post(
-        "http://localhost:3000/api/users/register",
+        `${API_BASE_URL}/api/users/register`,
         {
           name: newUser.name,
           nickname: newUser.nickname,

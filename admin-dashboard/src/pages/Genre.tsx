@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface Genre {
   _id: string;
   name: string;
@@ -27,7 +29,7 @@ export default function Genres() {
           return;
         }
 
-        const res = await axios.get("http://localhost:3000/api/genre/all", {
+        const res = await axios.get(`${API_BASE_URL}/api/genre/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -56,7 +58,7 @@ export default function Genres() {
       if (!token) return alert("Token manquant.");
 
       const res = await axios.post(
-        "http://localhost:3000/api/genre/new",
+        `${API_BASE_URL}/api/genre/new`,
         { name: newGenre.name },
         {
           headers: { Authorization: `Bearer ${token}` },

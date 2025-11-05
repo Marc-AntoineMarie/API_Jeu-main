@@ -31,5 +31,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use 20
             npm install
+            export VITE_API_URL=https://api-jeu-main-1.onrender.com
             npm run build
             sudo systemctl reload nginx

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Card from "../components/Card";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 export default function Dashboard() {
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [totalGames, setTotalGames] = useState<number>(0);
@@ -21,16 +23,16 @@ export default function Dashboard() {
         }
 
         const [usersRes, gamesRes, reviewsRes, genresRes] = await Promise.all([
-          axios.get("http://localhost:3000/api/users/", {
+          axios.get(`${API_BASE_URL}/api/users/`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:3000/api/game/all", {
+          axios.get(`${API_BASE_URL}/api/game/all`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:3000/api/review/all", {
+          axios.get(`${API_BASE_URL}/api/review/all`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:3000/api/genre/all", {
+          axios.get(`${API_BASE_URL}/api/genre/all`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface Game {
   _id: string;
   title: string;
@@ -36,7 +38,7 @@ export default function GameListPage() {
         return;
       }
 
-      const res = await axios.get("http://localhost:3000/api/gamelist/all", {
+      const res = await axios.get(`${API_BASE_URL}/api/gamelist/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -56,7 +58,7 @@ export default function GameListPage() {
   const fetchGames = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:3000/api/game/all", {
+      const res = await axios.get(`${API_BASE_URL}/api/game/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setGames(Array.isArray(res.data.games) ? res.data.games : []);
@@ -73,7 +75,7 @@ export default function GameListPage() {
       if (!token) return alert("Token manquant.");
 
       const res = await axios.post(
-        "http://localhost:3000/api/gamelist/new",
+        `${API_BASE_URL}/api/gamelist/new`,
         newGameList,
         {
           headers: { Authorization: `Bearer ${token}` },

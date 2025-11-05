@@ -23,7 +23,7 @@ app.use('/api/gamelist', gameListRoutes);
 app.use('/api/genre', genreRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello caca');
 });
 
 mongoose.connect(process.env.MONGO_URI)

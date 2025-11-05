@@ -8,6 +8,7 @@ import Login from "./pages/login";
 import Review from "./pages/Review";
 import Genres from "./pages/Genre";
 import GameList from "./pages/GameList";
+import Register from "./pages/register";
 
 export default function App() {
   return (
@@ -15,7 +16,7 @@ export default function App() {
   <Routes>
     {/* Routes publiques */}
     <Route path="/login" element={<Login />} />
-    {/* <Route path="/register" element={<Register />} /> */}
+    <Route path="/register" element={<Register />} />
 
     {/* Routes protégées */}
     {localStorage.getItem("token") ? (

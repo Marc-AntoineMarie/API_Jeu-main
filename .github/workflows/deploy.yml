@@ -24,19 +24,19 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          cd frontend
+          cd admin-dashboard
           npm ci
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd admin-dashboard
           npm run build
 
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/dist
+          path: admin-dashboard/dist
 
   deploy-frontend:
     name: Deploy Frontend to VPS
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
-          path: build
+          path: admin-dashboard/build
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.8.1
@@ -62,7 +62,7 @@ jobs:
 
       - name: Rsync build to VPS
         run: |
-          rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT }}" build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
+          rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT }}" admin-dashboard/build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
 
       - name: Reload PM2 frontend process
         uses: appleboy/ssh-action@v1.2.0

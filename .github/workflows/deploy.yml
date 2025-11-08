@@ -1,4 +1,4 @@
-name: CI_CD FRONT & BACKEND
+name: CI/CD Frontend & Backend
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  VPS_TARGET_DIR: /var/www/API_Jeu-main/admin-dashboard
+  VPS_TARGET_DIR: /var/www/frontend_build
 
 jobs:
   build-frontend:
@@ -15,31 +15,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: Use Node.js 20
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
-        
+
       - name: Install frontend dependencies
         run: |
-          cd admin-dashboard
+          cd frontend
           npm ci
 
       - name: Build frontend
         run: |
-          cd admin-dashboard
+          cd frontend
           npm run build
 
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/dist 
+          path: frontend/dist
 
-  deploy_frontend:
-    name: Deploy frontend to VPS (rsync + pm2)
+  deploy-frontend:
+    name: Deploy Frontend to VPS
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
@@ -54,46 +54,32 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Add known_hosts
+      - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Dry-run rsync (check)
-        run: |
-          echo "DRY RUN: rsync -> ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}"
-          rsync -avzn --delete build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
-        continue-on-error: false
-
       - name: Rsync build to VPS
         run: |
           rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT }}" build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
 
-      - name: Reload frontend via PM2 (zero-downtime)
-        run: |
-          ssh -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pm2 reload frontend || pm2 start serve --name frontend -- /var/www/API_Jeu-main/admin-dashboard/dist -s -l 3000 && pm2 save"
+      - name: Reload PM2 frontend process
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            pm2 reload frontend_api_Jeu_main || pm2 start "serve" --name "frontend_api_Jeu_main" --spa ${{ env.VPS_TARGET_DIR }} 5173
+            pm2 save
 
   deploy-backend:
-    name: Trigger Render deployment
+    name: Deploy Backend to Render
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Render via deploy hook
-        env:
-          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      - name: Trigger Render Deployment
         run: |
-          if [ -z "$RENDER_HOOK" ]; then
-            echo "RENDER_DEPLOY_HOOK_URL not provided - skipping backend deploy"
-            exit 1
-          fi
-          echo "Calling Render deploy hook"
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_HOOK")
-          echo "Render hook returned HTTP $http_code"
-          if [ "$http_code" -ge 400 ]; then
-            echo "Render deploy failed (HTTP $http_code)"
-            exit 1
-          fi
-      
-        
-        
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}

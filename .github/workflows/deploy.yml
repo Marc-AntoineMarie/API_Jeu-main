@@ -24,19 +24,19 @@ jobs:
         
       - name: Install frontend dependencies
         run: |
-          cd frontend
+          cd admin-dashboard
           npm ci
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd admin-dashboard
           npm run build
 
       - name: Upload frontend build artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/dist
+          path: frontend/dist 
 
   deploy_frontend:
     name: Deploy frontend to VPS (rsync + pm2)

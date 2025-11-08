@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build
-          path: admin-dashboard/build
+          path: admin-dashboard/dist
 
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.1

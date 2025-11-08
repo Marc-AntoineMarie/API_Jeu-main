@@ -39,57 +39,57 @@ jobs:
           path: admin-dashboard/dist
 
   deploy-frontend:
-  name: Deploy Frontend to VPS
-  needs: build-frontend
-  runs-on: ubuntu-latest
-  steps:
-    - name: Download frontend build artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-build
-        path: build
+    name: Deploy Frontend to VPS
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download frontend build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: build
 
-    - name: Check build artifact
-      run: |
-        echo "Contenu de build avant rsync :"
-        ls -R build
+      - name: Check build artifact
+        run: |
+          echo "Contenu de build avant rsync :"
+          ls -R build
 
-    - name: Setup SSH agent
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-    - name: Add VPS to known_hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
-    - name: Rsync build to VPS
-      run: |
-        rsync -avz --progress -e "ssh -p ${{ secrets.VPS_PORT }}" build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
+      - name: Rsync build to VPS
+        run: |
+          rsync -avz --progress -e "ssh -p ${{ secrets.VPS_PORT }}" build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
 
-    - name: Verify files on VPS
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        port: ${{ secrets.VPS_PORT }}
-        script: |
-          echo "Contenu sur VPS :"
-          ls -l ${{ env.VPS_TARGET_DIR }}
+      - name: Verify files on VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            echo "Contenu sur VPS :"
+            ls -l ${{ env.VPS_TARGET_DIR }}
 
-    - name: Reload PM2 frontend process
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        port: ${{ secrets.VPS_PORT }}
-        script: |
-          pm2 reload frontend_api_Jeu_main || pm2 start "serve" --name "frontend_api_Jeu_main" --spa ${{ env.VPS_TARGET_DIR }} 5173
-          pm2 save
+      - name: Reload PM2 frontend process
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            pm2 reload frontend_api_Jeu_main || pm2 start "serve" --name "frontend_api_Jeu_main" --spa ${{ env.VPS_TARGET_DIR }} 5173
+            pm2 save
 
   deploy-backend:
     name: Deploy Backend to Render

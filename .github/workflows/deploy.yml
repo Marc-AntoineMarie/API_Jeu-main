@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  VPS_TARGET_DIR: /var/www/frontend_build
+  VPS_TARGET_DIR: /var/www/API_Jeu_main_front_build
 
 jobs:
   build-frontend:

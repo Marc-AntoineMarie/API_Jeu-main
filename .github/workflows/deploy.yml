@@ -62,7 +62,7 @@ jobs:
 
       - name: Rsync build to VPS
         run: |
-          rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT }}" admin-dashboard/build/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
+          rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT }}" admin-dashboard/dist/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.VPS_TARGET_DIR }}
 
       - name: Reload PM2 frontend process
         uses: appleboy/ssh-action@v1.2.0
